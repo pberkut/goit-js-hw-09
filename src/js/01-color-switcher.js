@@ -14,10 +14,12 @@ function onStartClick() {
   timerId = setInterval(() => {
     refs.body.style.backgroundColor = getRandomHexColor();
   }, INTERVAL_TIMER);
+  refs.startBtn.disabled = true;
 }
 
 function onStopClick() {
   clearInterval(timerId);
+  refs.startBtn.disabled = false;
 }
 
 function getRandomHexColor() {
