@@ -37,7 +37,7 @@ const options = {
   },
 };
 
-flatpickr(inputRef, options);
+flatpickr(refs.input, options);
 // init();
 
 function init() {
