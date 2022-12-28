@@ -1,17 +1,18 @@
 import flatpickr from 'flatpickr';
 import 'flatpickr/dist/flatpickr.min.css';
+import Notiflix from 'notiflix';
+import 'notiflix/dist/notiflix-3.2.5.min.css';
 
 const refs = {
   input: document.querySelector('#datetime-picker'),
   btn: document.querySelector('[data-start]'),
-
+  // Interface Watchface
   days: document.querySelector('[data-days'),
   hours: document.querySelector('[data-hours]'),
   minutes: document.querySelector('[data-minutes]'),
   seconds: document.querySelector('[data-seconds]'),
 };
 
-let deltaTime = null;
 let intervalId = null;
 let endTime = null;
 
@@ -23,39 +24,53 @@ const options = {
   defaultDate: new Date(),
   minuteIncrement: 1,
   onClose(selectedDates) {
-    console.log(selectedDates[0]);
+    // console.log(selectedDates[0]);
     const currentTime = Date.now();
     const isPastDate = selectedDates[0] < currentTime;
-    console.log(isPastDate);
+
     if (isPastDate) {
-      alert('Please choose a date in the future');
+      Notiflix.Notify.failure('Please choose a date in the future');
       init();
+      clearInterval(intervalId);
       return;
     }
+
     refs.btn.disabled = false;
     endTime = selectedDates[0];
+
+    updateWatchface(countDeltaTime());
   },
 };
 
 flatpickr(refs.input, options);
-// init();
+
+init();
 
 function init() {
   refs.btn.disabled = true;
+  updateWatchface(0);
 }
 
 function onStartBtn() {
-  intervalId = setInterval(() => {
-    const currentTime = Date.now();
+  intervalId = setInterval(onTick, 1000);
+}
 
-    deltaTime = endTime - currentTime;
+function onTick() {
+  const deltaTime = countDeltaTime();
+  const isEndTimer = deltaTime < 0;
 
-    if (deltaTime < 0) {
-      clearInterval(intervalId);
-      return;
-    }
-    onTick(deltaTime);
-  }, 1000);
+  if (isEndTimer) {
+    clearInterval(intervalId);
+    Notiflix.Notify.success('Greeting, it is finish.');
+    return;
+  }
+
+  updateWatchface(deltaTime);
+}
+
+function countDeltaTime() {
+  const currentTime = Date.now();
+  return endTime - currentTime;
 }
 
 function convertMs(ms) {
@@ -77,13 +92,9 @@ function convertMs(ms) {
   return { days, hours, minutes, seconds };
 }
 
-function onTick(deltaTime) {
-  const time = convertMs(deltaTime);
-  console.log(time);
-  updateClockFace(time);
-}
+function updateWatchface(deltaTime) {
+  const { days, hours, minutes, seconds } = convertMs(deltaTime);
 
-function updateClockFace({ days, hours, minutes, seconds }) {
   refs.days.textContent = addLeadingZero(days, 3);
   refs.hours.textContent = addLeadingZero(hours);
   refs.minutes.textContent = addLeadingZero(minutes);
