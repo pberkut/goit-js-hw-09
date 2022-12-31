@@ -95,12 +95,12 @@ function convertMs(ms) {
 function updateWatchface(deltaTime) {
   const { days, hours, minutes, seconds } = convertMs(deltaTime);
 
-  refs.days.textContent = addLeadingZero(days, 3);
+  refs.days.textContent = addLeadingZero(days);
   refs.hours.textContent = addLeadingZero(hours);
   refs.minutes.textContent = addLeadingZero(minutes);
   refs.seconds.textContent = addLeadingZero(seconds);
 }
 
-function addLeadingZero(value, digit = 2) {
-  return String(value).padStart(digit, '0');
+function addLeadingZero(value) {
+  return String(value).padStart(2, '0');
 }
