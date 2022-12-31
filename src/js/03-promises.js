@@ -8,11 +8,6 @@ const refs = {
   amount: document.querySelector('[name="amount"]'),
 };
 
-// Temp value
-refs.delay.value = 500;
-refs.step.value = 100;
-refs.amount.value = 5;
-
 refs.form.addEventListener('submit', onClick);
 
 function onClick(e) {
@@ -25,8 +20,6 @@ function onClick(e) {
   let position = 1;
 
   for (position = 1; position <= amount; position += 1) {
-    delay += step;
-
     createPromise(position, delay)
       .then(({ position, delay }) => {
         Notiflix.Notify.success(
@@ -38,28 +31,20 @@ function onClick(e) {
           `❌ Rejected promise ${position} in ${delay}ms`
         );
       });
+
+    delay += step;
   }
 }
 
 function createPromise(position, delay) {
   const shouldResolve = Math.random() > 0.3;
-  if (shouldResolve) {
-    return new Promise((resolve, reject) => {
-      setTimeout(() => {
-        if (shouldResolve) {
-          resolve({ position, delay });
-        }
-        reject({ position, delay });
-      }, delay);
-    });
-  } else {
-    return new Promise((resolve, reject) => {
-      setTimeout(() => {
-        if (shouldResolve) {
-          resolve({ position, delay });
-        }
-        reject({ position, delay });
-      }, delay);
-    });
-  }
+  return new Promise((res, rej) => {
+    setTimeout(() => {
+      if (shouldResolve) {
+        res({ position, delay });
+      } else {
+        rej({ position, delay });
+      }
+    }, delay);
+  });
 }
